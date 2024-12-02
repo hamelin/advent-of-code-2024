@@ -14,5 +14,3 @@ dependencies:
   - scikit-learn
   - scipy
   - zstandard
-variables:
-  PYTEST_ADDOPTS: --ignore=env
