@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from d00.distance_between_lists import distance_between_lists, input2lists
+from d00 import input2lists
+from d00.distance_between_lists import distance_between_lists
 
 
 def test_input2lists():
