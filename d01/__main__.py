@@ -1,13 +1,6 @@
-from . import (
-    count_reports_safe,
-    count_reports_safe_with_pd,
-    reports_input
-)
+from . import distance_between_lists, input_lists, similarity_score
 
 
 if __name__ == "__main__":
-    print("Number of safe reports:", count_reports_safe(reports_input))
-    print(
-        "Number of safe reports with Problem Dampener:",
-        count_reports_safe_with_pd(reports_input)
-    )
+    print("Distance between lists:", distance_between_lists(input_lists))
+    print("Similarity score:", similarity_score(input_lists))

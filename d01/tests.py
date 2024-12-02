@@ -1,65 +1,44 @@
+import numpy as np
 import pytest
 
 from . import (
-    count_reports_safe,
-    count_reports_safe_with_pd,
-    is_report_safe,
-    is_report_safe_with_pd,
+    distance_between_lists,
+    iter_frequencies,
+    similarity_score,
 )
 
 
-@pytest.fixture
-def reports_example():
-    return [
-        [7, 6, 4, 2, 1],
-        [1, 3, 6, 7, 9],
-        [1, 2, 7, 8, 9],
-        [9, 7, 6, 2, 1],
-        [1, 3, 2, 4, 5],
-        [8, 6, 4, 4, 1],
-    ]
+def test_distance_between_lists():
+    assert 5 == distance_between_lists(np.asarray([
+        [5, 1],
+        [2, 8],
+        [0, 2],
+        [3, 0],
+    ], dtype=int))
 
 
-@pytest.fixture
-def report_n(request, reports_example):
-    return reports_example[request.param]
+def test_iter_frequencies():
+    assert [
+        (1, 0),
+        (2, 0),
+        (3, 3),
+        (4, 1),
+        (5, 1),
+        (6, 0),
+        (7, 0),
+        (8, 0),
+        (9, 1),
+        (10, 0),
+        (11, 0)
+    ] == list(iter_frequencies(np.array([4, 3, 5, 3, 9, 3]), 12))
 
 
-@pytest.mark.parametrize(
-    "is_safe,report_n",
-    [
-        [True, 0],
-        [True, 1],
-        [False, 2],
-        [False, 3],
-        [False, 4],
-        [False, 5],
-    ],
-    indirect=["report_n"]
-)
-def test_is_report_safe(is_safe, report_n):
-    assert is_safe == is_report_safe(report_n)
-
-
-def test_count_reports_safe(reports_example):
-    assert 2 == count_reports_safe(reports_example)
-
-
-@pytest.mark.parametrize(
-    "is_safe,report_n",
-    [
-        [True, 0],
-        [True, 1],
-        [False, 2],
-        [False, 3],
-        [True, 4],
-        [True, 5],
-    ],
-    indirect=["report_n"]
-)
-def test_is_report_safe_with_pd(is_safe, report_n):
-    assert is_safe == is_report_safe_with_pd(report_n)
-
-    
-def test_count_reports_safe_with_pd(reports_example):
-    assert 4 == count_reports_safe_with_pd(reports_example)
+def test_similarity_score():
+    assert 31 == similarity_score(np.array([
+        [3, 4],
+        [4, 3],
+        [2, 5],
+        [1, 3],
+        [3, 9],
+        [3, 3],
+    ]))
