@@ -1,7 +1,20 @@
 import numpy as np
 import pytest
 
-from d00.similarity_score import iter_frequencies, similarity_score
+from d00 import (
+    distance_between_lists,
+    iter_frequencies,
+    similarity_score,
+)
+
+
+def test_distance_between_lists():
+    assert 5 == distance_between_lists(np.asarray([
+        [5, 1],
+        [2, 8],
+        [0, 2],
+        [3, 0],
+    ], dtype=int))
 
 
 def test_iter_frequencies():

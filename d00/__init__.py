@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 import numpy as np
 
 
@@ -16,7 +17,40 @@ def split_lists(lists: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return (lists[:, i].squeeze() for i in [0, 1])
 
 
-input = """\
+def distance_between_lists(lists: np.ndarray) -> int:
+    left, right = (np.sort(ll) for ll in split_lists(lists))
+    return np.sum(np.abs(left - right))
+
+
+def iter_frequencies(ids: np.ndarray, id_end: int) -> Iterator[tuple[int, int]]:
+    ids_sorted = np.sort(ids)
+    ids_u, ind = np.unique(ids_sorted, return_index=True)
+    freq = [*np.split(ids_sorted, ind[1:]), [id_end + 1]]
+    j = 0
+    for i in range(1, id_end):
+        if i == freq[j][0]:
+            yield (i, len(freq[j]))
+            j += 1
+        else:
+            yield (i, 0)
+
+
+def similarity_score(lists: np.ndarray) -> int:
+    left, right = split_lists(lists)
+    score = 0
+    id_end = np.max(lists, axis=None) + 1
+    for (left_id, left_freq), (right_id, right_freq) in zip(
+        iter_frequencies(left, id_end),
+        iter_frequencies(right, id_end)
+    ):
+        assert left_id == right_id
+        score += left_id * left_freq * right_freq
+    return score
+
+
+input_lists = np.array([
+    [int(n) for n in line.strip().split()]
+    for line in """\
 88159   51481
 66127   31794
 71500   84893
@@ -1016,5 +1050,5 @@ input = """\
 90949   42627
 82510   25811
 21910   29845
-38235   16463\
-"""
+38235   16463""".split("\n")
+])
