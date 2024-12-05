@@ -6,7 +6,7 @@ from . import (
     get_middle_page,
     index_first_page_pair_invalid,
     is_update_valid,
-    iter_middle_page_updates_fixed,
+    iter_middle_page_updates_invalid_fixed,
     iter_middle_page_updates_valid,
     parse_rules,
     parse_updates,
@@ -170,5 +170,5 @@ def test_fix_update(expected, index, rules, updates):
 
 def test_iter_middle_page_updates_fixed(rules, updates):
     assert [47, 29, 47] == list(
-        iter_middle_page_updates_fixed(rules, updates)
+        iter_middle_page_updates_invalid_fixed(rules, updates)
     )

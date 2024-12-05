@@ -1,6 +1,6 @@
 from . import (
     INPUT,
-    iter_middle_page_updates_fixed,
+    iter_middle_page_updates_invalid_fixed,
     iter_middle_page_updates_valid,
     parse_full_text
 )
@@ -14,5 +14,5 @@ if __name__ == "__main__":
     )
     print(
         "Sum of middle pages of fixed updates:",
-        sum(iter_middle_page_updates_fixed(rules, updates))
+        sum(iter_middle_page_updates_invalid_fixed(rules, updates))
     )

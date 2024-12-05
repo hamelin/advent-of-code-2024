@@ -72,7 +72,10 @@ def fix_update(rules: Rules, update: Update) -> Update:
     return fixed
 
 
-def iter_middle_page_updates_fixed(rules: Rules, updates: Updates) -> Iterator[int]:
+def iter_middle_page_updates_invalid_fixed(
+    rules: Rules,
+    updates: Updates
+) -> Iterator[int]:
     for update in updates:
         if not is_update_valid(rules, update):
             yield get_middle_page(fix_update(rules, update))
