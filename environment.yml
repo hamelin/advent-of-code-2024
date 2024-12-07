@@ -3,6 +3,7 @@ dependencies:
   - flake8
   - matplotlib
   - mypy
+  - numba
   - numpy
   - pandas
   - pip
