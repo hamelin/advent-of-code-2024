@@ -252,8 +252,8 @@ def test_geometry(expected, name, gardens):
     "name,expected",
     [("small", 140), ("fragmented", 772), ("large", 1930)]
 )
-def test_cost_fences(expected, name, gardens):
-    assert expected == gardens[name].cost_fences()
+def test_cost_fences_perimeter(expected, name, gardens):
+    assert expected == gardens[name].cost_fences_perimeter()
 
 
 def as_edge_sets(s):
@@ -355,29 +355,123 @@ def test_edge_sets(expected,name,gardens):
     assert as_edge_sets(expected) == edge_set_actual
 
 
-# @pytest.mark.parametrize(
-#     "name,expected",
-#     [
-#         (
-#             "small",
-#             {
-#                 ("A", TOP, (0,0), 4),
-#                 ("A", LEFT, (0,0), 1),
-#                 ("A", RIGHT, 1),
-#                 ("A", BOTTOM, 4),
-#                 ("B", TOP, 2),
-#                 ("B", "LEFT", 2),
-#                 ("B", "RIGHT", 2),
-#                 ("B", BOTTOM, 2),
-#                 ("C", TOP, 1),
-#                 ("C", TOP, 1),
-#                 ("C", "LEFT", 2),
-#                 ("C", "RIGHT", 2),
-#                 ("C", LEFT, 1),
-#                 ("C", RIGHT, 1),
-#                 ("C", )
-#             }
-#         )
-#     ]
-# )
-# def test_find_sides(expected,name,gardens):
+TOP = Edge.top
+BOTTOM = Edge.bottom
+LEFT = Edge.left
+RIGHT = Edge.right
+
+
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        (
+            "small",
+            {
+                ("A", TOP, (0,0), 4),
+                ("A", LEFT, (0,0), 1),
+                ("A", RIGHT, (0,3), 1),
+                ("A", BOTTOM, (0,0), 4),
+                ("B", TOP, (1,0), 2),
+                ("B", LEFT, (1,0), 2),
+                ("B", RIGHT, (1,1), 2),
+                ("B", BOTTOM, (2,0), 2),
+                ("C", TOP, (1,2), 1),
+                ("C", TOP, (2,3), 1),
+                ("C", LEFT, (1,2), 2),
+                ("C", RIGHT, (2,3), 2),
+                ("C", LEFT, (3,3), 1),
+                ("C", RIGHT, (1,2), 1),
+                ("C", BOTTOM, (2,2), 1),
+                ("C", BOTTOM, (3,3), 1),
+                ("D", TOP, (1,3), 1),
+                ("D", LEFT, (1,3), 1),
+                ("D", RIGHT, (1,3), 1),
+                ("D", BOTTOM, (1,3), 1),
+                ("E", TOP, (3,0), 3),
+                ("E", BOTTOM, (3,0), 3),
+                ("E", LEFT, (3,0), 1),
+                ("E", RIGHT, (3,2), 1),
+            }
+        ),
+        (
+            "fragmented",
+            {
+                ("O", TOP, (0,0), 5),
+                ("O", LEFT, (0,0), 5),
+                ("O", BOTTOM, (0,1), 1),
+                ("O", BOTTOM, (0,3), 1),
+                ("O", RIGHT, (0,4), 5),
+                ("O", RIGHT, (1,0), 1),
+                ("X", TOP, (1,1), 1),
+                ("X", BOTTOM, (1,1), 1),
+                ("X", LEFT, (1,1), 1),
+                ("X", RIGHT, (1,1), 1),
+                ("O", LEFT, (1,2), 1),
+                ("O", RIGHT, (1,2), 1),
+                ("X", TOP, (1,3), 1),
+                ("X", BOTTOM, (1,3), 1),
+                ("X", LEFT, (1,3), 1),
+                ("X", RIGHT, (1,3), 1),
+                ("O", LEFT, (1,4), 1),
+                ("O", BOTTOM, (2,1), 1),
+                ("O", TOP, (2,1), 1),
+                ("O", BOTTOM, (2,3), 1),
+                ("O", TOP, (2,3), 1),
+                ("O", RIGHT, (3,0), 1),
+                ("X", TOP, (3,1), 1),
+                ("X", BOTTOM, (3,1), 1),
+                ("X", LEFT, (3,1), 1),
+                ("X", RIGHT, (3,1), 1),
+                ("O", LEFT, (3,2), 1),
+                ("O", RIGHT, (3,2), 1),
+                ("X", TOP, (3,3), 1),
+                ("X", BOTTOM, (3,3), 1),
+                ("X", LEFT, (3,3), 1),
+                ("X", RIGHT, (3,3), 1),
+                ("O", LEFT, (3,4), 1),
+                ("O", BOTTOM, (4,0), 5),
+                ("O", TOP, (4,1), 1),
+                ("O", TOP, (4,3), 1),
+            }
+        ),
+        (
+            "bigu",
+            {
+                ("X", TOP, (0,0), 1),
+                ("X", LEFT, (0,0), 3),
+                ("X", RIGHT, (0,0), 2),
+                ("O", TOP, (0,1), 3),
+                ("O", LEFT, (0,1), 2),
+                ("O", RIGHT, (0,3), 2),
+                ("X", TOP, (0,4), 1),
+                ("X", LEFT, (0,4), 2),
+                ("X", RIGHT, (0,4), 3),
+                ("O", BOTTOM, (1,1), 3),
+                ("X", BOTTOM, (2,0), 5),
+                ("X", TOP, (2,1), 3),
+            }
+        )
+    ]
+)
+def test_find_sides(expected,name,gardens):
+    assert expected == set(
+        sum(
+            (list(region.iter_sides()) for region in gardens[name].regions),
+            []
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        ("small", 80),
+        ("fragmented", 436),
+        ("large", 1206),
+        ("ex", 236),
+        ("Bblocks", 368),
+        ("bigu", 9 * 8 + 6 * 4),
+    ]
+)
+def test_cost_fences_num_sides(expected, name, gardens):
+    assert expected == gardens[name].cost_fences_num_sides()

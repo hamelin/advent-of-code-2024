@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from enum import auto, Enum
 import numpy as np
@@ -6,15 +6,16 @@ from textwrap import dedent
 from typing import Self
 
 
-Position = tuple[int, int]
-Shape = tuple[int, int]
-
-
 class Edge(Enum):
     top = auto()
     bottom = auto()
     left = auto()
     right = auto()
+
+
+Position = tuple[int, int]
+Shape = tuple[int, int]
+Side = tuple[str, Edge, Position, int]
 
 
 def neighbors(pos: Position) -> Iterator[Position]:
@@ -39,7 +40,7 @@ class Region:
             for pos in self.positions
         )
 
-    def cost_fence(self) -> int:
+    def cost_fence_perimeter(self) -> int:
         return self.area() * self.perimeter()
 
     def iter_edges(self) -> Iterator[tuple[Position, Edge]]:
@@ -50,6 +51,36 @@ class Region:
             ):
                 if neighbor not in self.positions:
                     yield position, edge
+
+    def iter_sides(self) -> Iterator[Side]:
+        indices_shared_specific = {
+            Edge.top: (0, 1),
+            Edge.bottom: (0, 1),
+            Edge.left: (1, 0),
+            Edge.right: (1, 0),
+        }
+        map_shared = {}
+        for position, edge in self.iter_edges():
+            i_shared, i_specific = indices_shared_specific[edge]
+            shared = position[i_shared]
+            specific = position[i_specific]
+            map_shared.setdefault(shared, {}).setdefault(edge, []).append(specific)
+
+        for shared, map_edges in map_shared.items():
+            for edge, specifics in map_edges.items():
+                assert specifics
+                i_shared, i_specific = indices_shared_specific[edge]
+                for group in _iter_contiguous_groups(sorted(specifics)):
+                    start = [-1, -1]
+                    start[i_shared] = shared
+                    start[i_specific] = group[0]
+                    yield (self.plant, edge, tuple(start), len(group))
+
+    def num_sides(self) -> int:
+        return sum(1 for _ in self.iter_sides())
+
+    def cost_fence_num_sides(self) -> int:
+        return self.area() * self.num_sides()
 
 
 @dataclass
@@ -96,5 +127,20 @@ class Garden:
             dtype=[("name", "<U1"), ("area", int), ("perimeter", int)]
         )
 
-    def cost_fences(self) -> int:
-        return sum(region.cost_fence() for region in self.regions)
+    def cost_fences_perimeter(self) -> int:
+        return sum(region.cost_fence_perimeter() for region in self.regions)
+
+    def cost_fences_num_sides(self) -> int:
+        return sum(region.cost_fence_num_sides() for region in self.regions)
+
+
+def _iter_contiguous_groups(seq: Sequence[int]) -> Iterator[list[int]]:
+    assert len(seq) > 0
+    group = []
+    for n in seq:
+        if not group or n == group[-1] + 1:
+            group.append(n)
+        else:
+            yield group
+            group = [n]
+    yield group

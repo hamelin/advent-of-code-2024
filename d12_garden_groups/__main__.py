@@ -146,4 +146,6 @@ VVVVVVVVVVVVVVVVOVVVVVVVVVVVVVVVKKKKKKKKKAOKOODDOIIOVVVVVVVVVMAAMSSMBBBBBBBBILII
 
 
 if __name__ == "__main__":
-    print("Cost of fences:", Garden.read_map(INPUT).cost_fences())
+    garden = Garden.read_map(INPUT)
+    print("Cost of fences by perimeter:", garden.cost_fences_perimeter())
+    print("Cost of fences by number of sides:", garden.cost_fences_num_sides())
