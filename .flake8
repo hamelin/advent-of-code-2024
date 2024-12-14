@@ -2,3 +2,4 @@
 max-line-length = 88
 per-file-ignores =
 	d12_garden_groups/tests.py:E131,E231
+	d14_restroom_redoubt/tests.py:E131,E231
