@@ -1,5 +1,6 @@
 name: advent-of-code-2024
 dependencies:
+  - cookiecutter
   - flake8
   - matplotlib
   - mypy

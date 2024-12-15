@@ -1,0 +1,5 @@
+{
+  "project_name": "dXX_advent_of_code",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
+  "author": "Benoit Hamelin"
+}
