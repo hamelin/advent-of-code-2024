@@ -206,10 +206,11 @@ def find_paths_cost_minimum(maze: Maze) -> set[Path]:
                 visited[here.reindeer] = here.cost
                 cost_bound = here.cost
                 dist = maze.dist_to_end(here.reindeer.position)
-                cost_bound += dist * COSTS[FORWARD]
-                axis = np.subtract(maze.end, here.reindeer.position) / dist
-                if np.any(np.not_equal(axis, here.reindeer.heading)):
-                    cost_bound += COSTS[CW]
+                if dist > 0:
+                    cost_bound += dist * COSTS[FORWARD]
+                    axis = np.subtract(maze.end, here.reindeer.position) / dist
+                    if np.any(np.not_equal(axis, here.reindeer.heading)):
+                        cost_bound += COSTS[CW]
                 # if maze.dist_to_end(here.reindeer.step(FORWARD).position) > dist:
                 #     cost_bound += COSTS[CW]
                 if cost_bound <= cost_best:
