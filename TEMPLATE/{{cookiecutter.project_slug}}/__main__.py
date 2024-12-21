@@ -1,3 +1,5 @@
+from tqdm.auto import tqdm
+
 from . import *  # noqa
 
 
