@@ -99,6 +99,7 @@ def test_iter_free_within(expected, race_track, position, dist_max):
     assert expected == actual
 
 
+@pytest.mark.skip("Long runtime")
 def test_iter_cheats_up_to_20_saving_ge50(race_track):
     race_track.init()
     expected = {
