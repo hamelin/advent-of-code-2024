@@ -1,3 +1,4 @@
 *.py[cd]
 __pycache__
 env
+d*/*.json
