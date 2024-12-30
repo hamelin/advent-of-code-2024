@@ -4,7 +4,7 @@ __generated_with = "0.10.8"
 app = marimo.App(
     width="full",
     layout_file="layouts/Day 1 - Historian Hysteria.slides.json",
-    css_file="custom.css",
+    css_file=".git/info/local.css",
 )
 
 
