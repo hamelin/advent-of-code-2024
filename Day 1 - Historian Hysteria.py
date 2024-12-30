@@ -1,18 +1,50 @@
 import marimo
 
-__generated_with = "0.10.7"
-app = marimo.App(width="full")
+__generated_with = "0.10.8"
+app = marimo.App(
+    width="full",
+    layout_file="layouts/Day 1 - Historian Hysteria.slides.json",
+    css_file="custom.css",
+)
 
 
 @app.cell
 def _():
-    from collections import defaultdict
-    from collections.abc import Mapping
-    import itertools as it
     import marimo as mo
+    return (mo,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
     from pathlib import Path
-    from textwrap import dedent
-    return Mapping, Path, dedent, defaultdict, it, mo
+    mo.md(
+        f"""
+        # Day 1 &mdash; [Historian Hysteria](https://adventofcode.com/2024/day/1)
+
+        {mo.accordion({"Input": (INPUT := mo.ui.code_editor(value=Path("inputs/01.txt").read_text(encoding="utf-8"), language=""))})}
+
+        We begin with with a list comparison problem.
+        In essence, if the lists were identical, they would contain the same location IDs.
+        """
+    )
+    return INPUT, Path
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Part I
+
+        The problem's solution is almost spelled out:
+        compare how far apart location IDs are, going from smallest to largest.
+        Thus, sort the two columns respectively, and compute the differences.
+        For that, we want to first read the two lists.
+        Since text shows up line by line, the two lists are intermingled.
+        We should thus first learn how to disentangle them. Here's an example.
+        """
+    )
+    return
 
 
 @app.cell
@@ -28,25 +60,52 @@ def _():
     return (text,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        Each _location ID_ is an integer.
+        An abstraction will help track what it is we are doing.
+        I dislike using words like _ID_ and _identifier_ when I talk about things,
+        let's just call location IDs `Location`s.
+        """
+    )
+    return
+
+
 @app.cell
 def _():
     Location = int
     return (Location,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        So parsing our two-column list should yield two `list[Location]`'s.
+        In Python 3, from a list of tuples, getting a tuple of lists requires but a clever application of `zip`.
+        """
+    )
+    return
+
+
 @app.cell
-def _(Location, dedent):
+def _(Location):
+    from textwrap import dedent
+
+
     def parse_lists_side_by_side(text: str) -> tuple[list[Location], list[Location]]:
-        pairs_locations = [
+        pairs_locations = (
             (Location(left), Location(right))
             for left, right in [
                 line.strip().split()
                 for line in dedent(text).strip().split("\n")
                 if line.strip()
             ]
-        ]
+        )
         return tuple(list(t) for t in zip(*pairs_locations))
-    return (parse_lists_side_by_side,)
+    return dedent, parse_lists_side_by_side
 
 
 @app.cell
@@ -58,10 +117,27 @@ def _(parse_lists_side_by_side, text):
     return (lists_side_by_side,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""Now we parse these two-column texts, let's grab each list on its own.""")
+    return
+
+
 @app.cell
 def _(lists_side_by_side):
     locations_left, locations_right = lists_side_by_side
     return locations_left, locations_right
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        As discussed above, measuring the distance between both lists is merely a matter of crunching the difference between locations,
+        in increasing order.
+        """
+    )
+    return
 
 
 @app.cell
@@ -79,26 +155,63 @@ def _(distance_between_lists, locations_left, locations_right):
     return
 
 
-@app.cell
-def _(Path, distance_between_lists, parse_lists_side_by_side):
-    path_input = Path("inputs/01.txt")
-    INPUT = path_input.read_text(encoding="utf-8")
-    LOCATIONS_LEFT, LOCATIONS_RIGHT = parse_lists_side_by_side(INPUT)
-    distance_between_lists(LOCATIONS_LEFT, LOCATIONS_RIGHT)
-    return INPUT, LOCATIONS_LEFT, LOCATIONS_RIGHT, path_input
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""We're ready to handle the problem input.""")
+    return
 
 
 @app.cell
-def _(Iterable, Location, Mapping, defaultdict, it):
+def _(INPUT, distance_between_lists, mo, parse_lists_side_by_side):
+    LOCATIONS_LEFT, LOCATIONS_RIGHT = parse_lists_side_by_side(INPUT.value)
+    DIST = distance_between_lists(LOCATIONS_LEFT, LOCATIONS_RIGHT)
+    mo.center(mo.md(f"**{DIST}**"))
+    return DIST, LOCATIONS_LEFT, LOCATIONS_RIGHT
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ## Part II
+
+        We are asked to compute a different similarity measure over matching locations,
+        one that would ignore locations present in just one of the two lists.
+        So what we want to calculate, here, is a number that depends on an [inner join](https://en.wikipedia.org/wiki/Join_(SQL)) of the two lists.
+        In particular, as one understands the example given,
+        for each matching ID,
+        the _similarity score_ involves computing the product of the frequencies of the locations in each list,
+        respectively. Let's focus on this first.
+
+        An easy way to compute the frequency distribution of a list of integers in Python is to use `itertools.groupby`.
+        It is slightly tricky to understand, please do look up its [documentation](https://docs.python.org/3/library/itertools.html#itertools.groupby).
+        """
+    )
+    return
+
+
+@app.cell
+def _(Iterable, Location):
+    from collections import defaultdict
+    from collections.abc import Mapping
+    import itertools as it
+
+
     def count_frequencies(locations: Iterable[Location]) -> Mapping[Location, int]:
         return defaultdict(
             lambda: 0,
             {
-                location: len(list(group))
+                location: sum(1 for _ in group)
                 for location, group in it.groupby(sorted(locations))
             },
         )
-    return (count_frequencies,)
+    return Mapping, count_frequencies, defaultdict, it
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""Test using the example lists given above.""")
+    return
 
 
 @app.cell
@@ -125,11 +238,29 @@ def _(count_frequencies, locations_left, locations_right):
     return (i,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        We also ensure these location-to-frequency dictionaries can handle locations not present in the list.
+        For these, the frequency is 0.
+        Python's `collections.defaultdict` makes easy work of handling default value reporting on unknown keys.
+        """
+    )
+    return
+
+
 @app.cell
 def _(count_frequencies, locations_left):
     _expected = 0
     _actual = count_frequencies(locations_left)[0]
     assert _expected == _actual, _actual
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""We have all the ingredients in place to crunch these similarity scores.""")
     return
 
 
@@ -154,10 +285,17 @@ def _(locations_left, locations_right, score_similarity):
     return
 
 
-@app.cell
-def _(LOCATIONS_LEFT, LOCATIONS_RIGHT, score_similarity):
-    score_similarity(LOCATIONS_LEFT, LOCATIONS_RIGHT)
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""Finish this on the problem input.""")
     return
+
+
+@app.cell
+def _(LOCATIONS_LEFT, LOCATIONS_RIGHT, mo, score_similarity):
+    SCORE = score_similarity(LOCATIONS_LEFT, LOCATIONS_RIGHT)
+    mo.center(mo.md(f"**{SCORE}**"))
+    return (SCORE,)
 
 
 if __name__ == "__main__":
