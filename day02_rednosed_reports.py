@@ -11,7 +11,7 @@ def _():
     return input_editor, mo
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(input_editor, mo):
     editor_input = input_editor(2)
     mo.md(
@@ -26,7 +26,7 @@ def _(input_editor, mo):
     return (editor_input,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -81,9 +81,7 @@ def _(Iterator, Report):
         for line_ in text.split("\n"):
             line = line_.strip()
             if line:
-                yield Report(
-                    levels=[int(n) for n in line.split()]
-                )
+                yield Report(levels=[int(n) for n in line.split()])
     return (parse_reports,)
 
 
@@ -151,7 +149,7 @@ def _(mo):
 def _(editor_input, mo, parse_reports):
     REPORTS = list(parse_reports(editor_input.value))
     NUM_REPORTS_SAFE = sum(1 for report in REPORTS if report.is_safe())
-    mo.center(mo.md(f"**Number of safe reports: {NUM_REPORTS_SAFE}**"))
+    mo.center(mo.md(f"Number of safe reports: **{NUM_REPORTS_SAFE}**"))
     return NUM_REPORTS_SAFE, REPORTS
 
 
@@ -193,7 +191,7 @@ def _(editor_input, mo, parse_reports):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
