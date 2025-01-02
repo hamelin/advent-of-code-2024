@@ -1,48 +1,3 @@
-from collections.abc import Iterable
-import numpy as np
-from typing import Callable
-
-
-Report = Iterable[int]
-
-
-def is_report_safe(report_: Report) -> bool:
-    report = np.asarray(report_)
-    assert report.ndim == 1
-    assert report.shape[0] >= 2
-    diffs = np.diff(report)
-    if np.all(diffs > 0) or np.all(diffs < 0):
-        return np.all(np.abs(diffs) <= 3)
-    return False
-
-
-def count_reports_satisfying(
-    reports: Iterable[Report],
-    predicate: Callable[[Report], bool]
-) -> int:
-    return sum(int(predicate(report)) for report in reports)
-
-
-def count_reports_safe(reports: Iterable[Report]) -> int:
-    return count_reports_satisfying(reports, is_report_safe)
-
-def is_report_safe_with_pd(report: Report) -> bool:
-    if is_report_safe(report):
-        return True
-    else:
-        for i in range(len(report)):
-            if is_report_safe([*report[:i], *report[i + 1:]]):
-                return True
-    return False
-
-
-def count_reports_safe_with_pd(reports: Iterable[Report]) -> int:
-    return count_reports_satisfying(reports, is_report_safe_with_pd)
-
-
-reports_input = [
-    np.array([int(n) for n in line.strip().split()])
-    for line in """\
 35 37 38 41 43 41
 64 66 69 71 72 72
 45 47 50 51 52 53 55 59
@@ -1042,5 +997,4 @@ reports_input = [
 10 12 13 16 17
 14 12 10 7 5 3
 47 49 50 52 53 54 57 59
-28 29 32 33 34""".split("\n")
-]
+28 29 32 33 34
